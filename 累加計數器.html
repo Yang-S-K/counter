@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>累加計數器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            background-color: #282c34;
+            color: white;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+        }
+        button {
+            cursor: pointer;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: linear-gradient(45deg, #45a049, #4CAF50);
+        }
+        #incrementInputsContainer input {
+            display: block;
+            margin: 5px auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>累加計數器</h1>
+    <div class="container" id="startContainer">
+        <label for="startValue">輸入起始值：</label>
+        <input type="number" id="startValue" placeholder="例如：0">
+        <br>
+        <div id="incrementInputsContainer">
+            <label>設定步長：</label>
+            <input type="number" class="incrementInput" placeholder="例如：1">
+        </div>
+        <button id="addIncrementInputButton">新增步長欄位</button>
+        <br>
+        <button id="startButton">開始程式</button>
+    </div>
+
+    <div class="container" id="counterContainer" style="display: none;">
+        <button id="backButton">返回</button>
+        <div id="addButtonsContainer"></div>
+        <h2 id="currentValue">目前值：0</h2>
+    </div>
+
+    <script>
+        const startButton = document.getElementById('startButton');
+        const backButton = document.getElementById('backButton');
+        const saveButton = document.getElementById('saveButton');
+        const startValueInput = document.getElementById('startValue');
+        const incrementInputsContainer = document.getElementById('incrementInputsContainer');
+        const addIncrementInputButton = document.getElementById('addIncrementInputButton');
+        const currentValueDisplay = document.getElementById('currentValue');
+        const startContainer = document.getElementById('startContainer');
+        const counterContainer = document.getElementById('counterContainer');
+        const addButtonsContainer = document.getElementById('addButtonsContainer');
+
+        let currentValue = 0;
+
+        addIncrementInputButton.addEventListener('click', () => {
+            const newInput = document.createElement('input');
+            newInput.type = 'number';
+            newInput.className = 'incrementInput';
+            newInput.placeholder = '例如：1';
+            incrementInputsContainer.appendChild(newInput);
+        });
+
+        startButton.addEventListener('click', () => {
+            const startValue = parseInt(startValueInput.value, 10);
+            const incrementInputs = document.querySelectorAll('.incrementInput');
+            const incrementValues = Array.from(incrementInputs).map(input => parseInt(input.value, 10));
+
+            if (isNaN(startValue)) {
+                alert('請輸入有效的起始值！');
+                return;
+            }
+
+            if (incrementValues.some(isNaN)) {
+                alert('請確保所有步長值均為有效數字！');
+                return;
+            }
+
+            currentValue = startValue;
+            currentValueDisplay.textContent = `目前值：${currentValue}`;
+
+            addButtonsContainer.innerHTML = '';
+            incrementValues.forEach(increment => {
+                const addButton = document.createElement('button');
+                addButton.textContent = `+${increment}`;
+                addButton.dataset.increment = increment;
+                addButton.addEventListener('click', () => {
+                    currentValue += increment;
+                    currentValueDisplay.textContent = `目前值：${currentValue}`;
+                });
+
+                const subtractButton = document.createElement('button');
+                subtractButton.textContent = `-${increment}`;
+                subtractButton.dataset.increment = -increment;
+                subtractButton.addEventListener('click', () => {
+                    currentValue -= increment;
+                    currentValueDisplay.textContent = `目前值：${currentValue}`;
+                });
+
+                const buttonContainer = document.createElement('div');
+                buttonContainer.appendChild(addButton);
+                buttonContainer.appendChild(subtractButton);
+                addButtonsContainer.appendChild(buttonContainer);
+            });
+
+            startContainer.style.display = 'none';
+            counterContainer.style.display = 'block';
+        });
+
+
+
+        backButton.addEventListener('click', () => {
+            startValueInput.value = currentValue;
+            counterContainer.style.display = 'none';
+            startContainer.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
